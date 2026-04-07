@@ -1,0 +1,338 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+
+  .screen { display: none; padding: 2rem 1.5rem; }
+  .screen.active { display: block; }
+
+  .title { font-size: 22px; font-weight: 500; color: var(--color-text-primary); text-align: center; margin-bottom: 4px; }
+  .subtitle { font-size: 14px; color: var(--color-text-secondary); text-align: center; margin-bottom: 2rem; }
+
+  .animal-badge {
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 1rem;
+    line-height: 1;
+  }
+
+  .input-group { margin-bottom: 1rem; }
+  .input-group label { display: block; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .input-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    font-size: 15px;
+    color: var(--color-text-primary);
+    background: var(--color-background-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .input-group input:focus { border-color: var(--color-border-primary); }
+
+  .btn {
+    width: 100%;
+    padding: 11px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    transition: background 0.1s, transform 0.1s;
+    margin-top: 8px;
+  }
+  .btn:hover { background: var(--color-background-secondary); }
+  .btn:active { transform: scale(0.98); }
+  .btn.primary {
+    background: #1D9E75;
+    color: #E1F5EE;
+    border-color: #0F6E56;
+  }
+  .btn.primary:hover { background: #0F6E56; }
+
+  .move-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 1.5rem 0;
+  }
+  .move-card {
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    background: var(--color-background-primary);
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+  .move-card:hover { border-color: var(--color-border-secondary); background: var(--color-background-secondary); transform: translateY(-2px); }
+  .move-card.selected { border-color: #1D9E75; background: #E1F5EE; }
+  .move-card .icon { font-size: 32px; margin-bottom: 6px; }
+  .move-card .name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .move-card .animal { font-size: 11px; color: var(--color-text-secondary); }
+
+  .turn-banner {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 12px 16px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+  .turn-banner strong { color: var(--color-text-primary); }
+
+  .score-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .score-pill {
+    flex: 1;
+    text-align: center;
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 8px 12px;
+  }
+  .score-pill .player-name { font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .score-pill .score-num { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .vs { font-size: 13px; color: var(--color-text-tertiary); }
+
+  .result-box {
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    border: 0.5px solid var(--color-border-tertiary);
+    margin-bottom: 1.5rem;
+    background: var(--color-background-primary);
+  }
+  .result-icon { font-size: 56px; margin-bottom: 12px; }
+  .result-moves { display: flex; justify-content: center; gap: 24px; margin: 12px 0; }
+  .result-move { text-align: center; }
+  .result-move .m-icon { font-size: 28px; }
+  .result-move .m-name { font-size: 12px; color: var(--color-text-secondary); }
+  .result-winner { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-top: 8px; }
+  .result-desc { font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; }
+
+  .rules-card {
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.25rem;
+    background: var(--color-background-primary);
+    margin-bottom: 1rem;
+  }
+  .rule-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .rule-row:last-child { border-bottom: none; }
+  .rule-row .icons { font-size: 18px; min-width: 60px; }
+</style>
+
+<div id="screen-names" class="screen active">
+  <div class="animal-badge">🦁🐻</div>
+  <h1 class="title">Pedra, Papel e Tesoura</h1>
+  <p class="subtitle">o duelo dos animais — informe os jogadores para começar</p>
+  <div class="input-group">
+    <label>Nome do jogador 1 🦊</label>
+    <input id="inp1" type="text" placeholder="ex: Douglas" maxlength="20" />
+  </div>
+  <div class="input-group">
+    <label>Nome do jogador 2 🐺</label>
+    <input id="inp2" type="text" placeholder="ex: Thiago" maxlength="20" />
+  </div>
+  <button class="btn primary" onclick="startGame()">Entrar na arena →</button>
+  <button class="btn" onclick="showScreen('screen-rules')" style="margin-top:8px">Ver regras</button>
+</div>
+
+<div id="screen-rules" class="screen">
+  <h1 class="title">Regras do duelo</h1>
+  <p class="subtitle">quem vence quem na selva</p>
+  <div class="rules-card">
+    <div class="rule-row">
+      <span class="icons">🗿 ✂️</span>
+      <span>Pedra (urso) amassa a tesoura (aguia)</span>
+    </div>
+    <div class="rule-row">
+      <span class="icons">📄 🗿</span>
+      <span>Papel (cobra) envolve a pedra (urso)</span>
+    </div>
+    <div class="rule-row">
+      <span class="icons">✂️ 📄</span>
+      <span>Tesoura (aguia) corta o papel (cobra)</span>
+    </div>
+  </div>
+  <button class="btn" onclick="showScreen('screen-names')">← Voltar</button>
+</div>
+
+<div id="screen-play" class="screen">
+  <div id="score-display" class="score-bar"></div>
+  <div id="turn-banner" class="turn-banner"></div>
+  <div class="move-grid">
+    <div class="move-card" onclick="selectMove('pedra', this)">
+      <div class="icon">🐻</div>
+      <div class="name">Pedra</div>
+      <div class="animal">urso</div>
+    </div>
+    <div class="move-card" onclick="selectMove('papel', this)">
+      <div class="icon">🐍</div>
+      <div class="name">Papel</div>
+      <div class="animal">cobra</div>
+    </div>
+    <div class="move-card" onclick="selectMove('tesoura', this)">
+      <div class="icon">🦅</div>
+      <div class="name">Tesoura</div>
+      <div class="animal">águia</div>
+    </div>
+  </div>
+  <div id="confirm-btn" style="display:none">
+    <button class="btn primary" onclick="confirmMove()">Confirmar jogada →</button>
+  </div>
+</div>
+
+<div id="screen-result" class="screen">
+  <div id="score-display-result" class="score-bar"></div>
+  <div id="result-box" class="result-box"></div>
+  <button class="btn primary" onclick="nextRound()">Próxima rodada →</button>
+  <button class="btn" onclick="resetGame()" style="margin-top:8px">Novo jogo</button>
+</div>
+
+<script>
+  let p1 = '', p2 = '';
+  let score1 = 0, score2 = 0;
+  let move1 = null, move2 = null;
+  let phase = 1;
+
+  const moveIcons = { pedra: '🐻', papel: '🐍', tesoura: '🦅' };
+  const moveNames = { pedra: 'Pedra', papel: 'Papel', tesoura: 'Tesoura' };
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function startGame() {
+    const v1 = document.getElementById('inp1').value.trim();
+    const v2 = document.getElementById('inp2').value.trim();
+    if (!v1 || !v2) { alert('Informe os nomes dos dois jogadores!'); return; }
+    p1 = v1; p2 = v2;
+    score1 = 0; score2 = 0;
+    startRound();
+  }
+
+  function startRound() {
+    move1 = null; move2 = null; phase = 1;
+    updateScoreDisplay('score-display');
+    updateTurnBanner();
+    document.querySelectorAll('.move-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('confirm-btn').style.display = 'none';
+    showScreen('screen-play');
+  }
+
+  function updateScoreDisplay(id) {
+    const el = document.getElementById(id);
+    const maxLen = 12;
+    const n1 = p1.length > maxLen ? p1.slice(0, maxLen) + '…' : p1;
+    const n2 = p2.length > maxLen ? p2.slice(0, maxLen) + '…' : p2;
+    el.innerHTML = `
+      <div class="score-pill"><div class="player-name">🦊 ${n1}</div><div class="score-num">${score1}</div></div>
+      <div class="vs">vs</div>
+      <div class="score-pill"><div class="player-name">🐺 ${n2}</div><div class="score-num">${score2}</div></div>
+    `;
+  }
+
+  function updateTurnBanner() {
+    const name = phase === 1 ? p1 : p2;
+    const icon = phase === 1 ? '🦊' : '🐺';
+    document.getElementById('turn-banner').innerHTML = `${icon} <strong>${name}</strong>, escolha sua jogada`;
+  }
+
+  function selectMove(move, el) {
+    document.querySelectorAll('.move-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    if (phase === 1) move1 = move;
+    else move2 = move;
+    document.getElementById('confirm-btn').style.display = 'block';
+  }
+
+  function confirmMove() {
+    if (phase === 1) {
+      if (!move1) return;
+      phase = 2;
+      document.querySelectorAll('.move-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('confirm-btn').style.display = 'none';
+      updateTurnBanner();
+    } else {
+      if (!move2) return;
+      resolveRound();
+    }
+  }
+
+  function resolveRound() {
+    let winner = null;
+    let desc = '';
+    if (move1 === move2) {
+      desc = 'os animais se encararam — empate!';
+    } else if (
+      (move1 === 'pedra' && move2 === 'tesoura') ||
+      (move1 === 'tesoura' && move2 === 'papel') ||
+      (move1 === 'papel' && move2 === 'pedra')
+    ) {
+      winner = p1; score1++;
+      desc = getDesc(move1, move2);
+    } else {
+      winner = p2; score2++;
+      desc = getDesc(move2, move1);
+    }
+
+    updateScoreDisplay('score-display-result');
+
+    const icon = winner ? '🏆' : '🤝';
+    const winText = winner ? `${winner} venceu a rodada!` : 'Empate!';
+    document.getElementById('result-box').innerHTML = `
+      <div class="result-icon">${icon}</div>
+      <div class="result-moves">
+        <div class="result-move">
+          <div class="m-icon">${moveIcons[move1]}</div>
+          <div class="m-name">${p1}</div>
+        </div>
+        <div style="font-size:18px;color:var(--color-text-tertiary);align-self:center">vs</div>
+        <div class="result-move">
+          <div class="m-icon">${moveIcons[move2]}</div>
+          <div class="m-name">${p2}</div>
+        </div>
+      </div>
+      <div class="result-winner">${winText}</div>
+      <div class="result-desc">${desc}</div>
+    `;
+    showScreen('screen-result');
+  }
+
+  function getDesc(w, l) {
+    const pairs = {
+      'pedra-tesoura': '🐻 o urso amassou a águia',
+      'tesoura-papel': '🦅 a águia cortou a cobra',
+      'papel-pedra': '🐍 a cobra envolveu o urso',
+    };
+    return pairs[`${w}-${l}`] || '';
+  }
+
+  function nextRound() { startRound(); }
+
+  function resetGame() {
+    score1 = 0; score2 = 0; move1 = null; move2 = null; phase = 1;
+    document.getElementById('inp1').value = '';
+    document.getElementById('inp2').value = '';
+    showScreen('screen-names');
+  }
+</script>
